@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Clusterfudge",
+  "version": "0.1.0",
+  "description": "Recognize Elastic Stack clusters by tab color cues and title prefixes.",
+  "minimum_chrome_version": "109",
+  "permissions": ["storage", "scripting", "contextMenus"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background-chromium.js" },
+  "action": {
+    "default_title": "Clusterfudge preferences",
+    "default_icon": { "16": "icons/layers-16.png", "48": "icons/layers-48.png" }
+  },
+  "icons": {
+    "16": "icons/layers-16.png",
+    "48": "icons/layers-48.png",
+    "128": "icons/layers-128.png"
+  },
+  "options_ui": { "page": "options.html", "open_in_tab": true }
+}

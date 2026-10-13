@@ -1,0 +1,97 @@
+const { test } = require("node:test");
+const assert = require("node:assert/strict");
+const { JSDOM } = require("jsdom");
+const { PageDecoration } = require("../extension/decoration.js");
+const settle = () => new Promise(resolve => setImmediate(resolve));
+const cluster = { name: "APAC", color: "#123456" };
+
+test("section titles follow updates and original favicons remain unchanged", async () => {
+  const dom = new JSDOM('<head><title>Index Management - Elastic</title><link rel="shortcut icon" href="original.ico" type="image/x-icon"></head>');
+  const document = dom.window.document;
+  const icon = document.querySelector("link");
+  const originalIcon = icon.outerHTML;
+  const decoration = new PageDecoration(document);
+  decoration.setCluster(cluster);
+  assert.equal(document.title, "APAC - Index Management");
+  assert.equal(icon.outerHTML, originalIcon);
+  document.title = "Dashboard - Elastic";
+  icon.href = "updated.ico";
+  icon.type = "image/svg+xml";
+  await settle();
+  assert.equal(document.title, "APAC - Dashboard");
+  assert.equal(icon.getAttribute("href"), "updated.ico");
+  assert.equal(icon.type, "image/svg+xml");
+  decoration.setCluster({ name: "EMEA", color: "#fedcba" });
+  assert.equal(document.title, "EMEA - Dashboard");
+  decoration.stop();
+  assert.equal(document.title, "Dashboard - Elastic");
+  assert.equal(icon.getAttribute("href"), "updated.ico");
+  assert.equal(icon.type, "image/svg+xml");
+  assert.equal(icon.hasAttribute("sizes"), false);
+  assert.equal(document.querySelectorAll('link[rel~="icon"]').length, 1);
+  dom.window.close();
+});
+
+test("new and removed icons, page-owned prefixes, and separate documents", async () => {
+  const first = new JSDOM("<title>APAC:Owned</title>");
+  const second = new JSDOM("<title>Other</title>");
+  const decoration = new PageDecoration(first.window.document);
+  const other = new PageDecoration(second.window.document);
+  decoration.setCluster(cluster);
+  other.setCluster({ name: "EMEA", color: "#ffffff" });
+  const newIcon = first.window.document.createElement("link");
+  newIcon.rel = "icon";
+  newIcon.href = "late.ico";
+  first.window.document.head.append(newIcon);
+  await settle();
+  assert.equal(newIcon.getAttribute("href"), "late.ico");
+  newIcon.remove();
+  await settle();
+  assert.equal(newIcon.getAttribute("href"), "late.ico");
+  decoration.stop();
+  assert.equal(first.window.document.title, "APAC:Owned");
+  assert.equal(second.window.document.title, "EMEA - Other");
+  assert.equal(first.window.document.querySelectorAll("link").length, 0);
+  other.stop();
+  first.window.close();
+  second.window.close();
+});
+
+test("unmatched pages and unobserved site edits remain untouched", () => {
+  const dom = new JSDOM("<title>Untouched</title><link rel='icon' href='site.ico'>");
+  const document = dom.window.document;
+  const before = document.head.innerHTML;
+  const decoration = new PageDecoration(document);
+  decoration.setCluster(null);
+  assert.equal(document.head.innerHTML, before);
+  decoration.setCluster(cluster);
+  document.title = "Page-owned update";
+  document.querySelector("link").href = "new.ico";
+  decoration.stop();
+  assert.equal(document.title, "Page-owned update");
+  assert.equal(document.querySelector("link").getAttribute("href"), "new.ico");
+  dom.window.close();
+});
+
+test("head replacement, icon rel changes, and observer feedback settle", async () => {
+  const dom = new JSDOM("<title>First</title><link rel='icon' href='site.ico'>");
+  let renders = 0;
+  const decoration = new PageDecoration(dom.window.document);
+  const apply = decoration.title.apply.bind(decoration.title);
+  decoration.title.apply = (...args) => { renders += 1; return apply(...args); };
+  decoration.setCluster(cluster);
+  await settle();
+  assert.equal(renders, 1);
+  const original = dom.window.document.querySelector("link");
+  original.rel = "stylesheet";
+  await settle();
+  assert.equal(original.getAttribute("href"), "site.ico");
+  const head = dom.window.document.createElement("head");
+  head.innerHTML = "<title>Second</title>";
+  dom.window.document.head.replaceWith(head);
+  await settle();
+  assert.equal(dom.window.document.title, "APAC - Second");
+  assert.equal(head.querySelector("link"), null);
+  decoration.stop();
+  dom.window.close();
+});

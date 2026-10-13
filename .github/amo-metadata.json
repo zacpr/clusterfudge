@@ -1,0 +1,9 @@
+{
+  "summary": {
+    "en-US": "Identify Elastic Stack clusters with section-first tab titles, stable colors, and context-menu navigation between equivalent URLs."
+  },
+  "categories": ["tabs"],
+  "version": {
+    "license": "all-rights-reserved"
+  }
+}

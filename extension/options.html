@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clusterfudge preferences</title>
+  <link rel="stylesheet" href="options.css">
+  <script src="core.js" defer></script>
+  <script src="preferences.js" defer></script>
+  <script src="options.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand"><img src="icons/layers.svg" alt="" width="30" height="30"><h1>Clusterfudge</h1></div>
+      <span class="local-label">Local preferences</span>
+    </header>
+    <form id="preferences">
+      <section aria-labelledby="clusters-heading">
+        <div class="section-heading">
+          <h2 id="clusters-heading">Clusters</h2>
+          <div class="config-actions">
+            <button id="import" type="button" disabled><img src="icons/upload.svg" alt="">Import JSON</button>
+            <button id="export" type="button" disabled><img src="icons/download.svg" alt="">Export JSON</button>
+            <button id="add" type="button"><img src="icons/plus.svg" alt="">Add cluster</button>
+          </div>
+          <input id="config-file" type="file" accept=".json,application/json" hidden aria-label="Import configuration file">
+        </div>
+        <div id="clusters"></div>
+        <p id="empty">No clusters configured</p>
+      </section>
+      <section class="appearance" aria-labelledby="appearance-heading">
+        <h2 id="appearance-heading">Appearance</h2>
+        <label class="toggle"><input id="active-tab" type="checkbox">Color the active tab</label>
+        <p id="theme-note" hidden>Active-tab coloring is available in Firefox only; this preference is preserved in Chromium.</p>
+      </section>
+      <p id="error" role="alert"></p>
+      <footer>
+        <span id="status" role="status">Loading preferences</span>
+        <button id="save" class="primary" type="submit" disabled><img src="icons/save.svg" alt="">Save preferences</button>
+      </footer>
+    </form>
+  </main>
+  <template id="cluster-template">
+    <fieldset class="cluster">
+      <legend></legend>
+      <label class="name-field">Name<input class="name" type="text" required maxlength="80" autocomplete="off" placeholder="apac-test-1"></label>
+      <label class="pattern-field">Host pattern<input class="pattern" type="text" required autocomplete="off" spellcheck="false" placeholder="*.apac-test-1.sand.wtg.zone"></label>
+      <div class="color-field">
+        <label>Color<input class="color" type="color" aria-label="Cluster color"></label>
+        <label class="automatic"><input class="auto" type="checkbox" checked>Automatic</label>
+      </div>
+      <div class="row-actions">
+        <button class="up icon-button" type="button" title="Move cluster up" aria-label="Move cluster up"><img src="icons/arrow-up.svg" alt=""></button>
+        <button class="down icon-button" type="button" title="Move cluster down" aria-label="Move cluster down"><img src="icons/arrow-down.svg" alt=""></button>
+        <button class="remove icon-button" type="button" title="Remove cluster" aria-label="Remove cluster"><img src="icons/trash-2.svg" alt=""></button>
+      </div>
+      <div class="preview"><span class="swatch"></span><span class="preview-title"></span></div>
+      <details class="color-options">
+        <summary>Color palette</summary>
+        <div class="color-palette" role="group" aria-label="Color shades"></div>
+        <label class="hex-field">Hex color<input class="hex" type="text" maxlength="7" pattern="#[0-9a-fA-F]{6}" spellcheck="false" autocomplete="off"></label>
+      </details>
+    </fieldset>
+  </template>
+</body>
+</html>
