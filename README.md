@@ -54,7 +54,7 @@ The readable, versioned format is:
 
 ## Try the Test Version
 
-**Firefox add-on testing only. No add-on has been uploaded or submitted to AMO. Review the local build and explicitly approve an AMO submission before using the upload workflow.**
+**Firefox add-on testing only. No add-on has been uploaded or submitted to AMO. Review and test the local build before submitting it manually through the AMO developer dashboard.**
 
 The Firefox package declares **Firefox desktop 140+**, using Manifest V2. The minimum accommodates Firefox's current no-data-collection declaration. Actual Firefox checks have run on **Firefox 157.0.1 on Linux**, not every supported release. The separate Chromium package uses Manifest V3 and shares matching, decoration, preferences, and navigation with Chrome and Edge; active-tab coloring remains Firefox-only.
 
@@ -120,7 +120,7 @@ npm run package:chromium
 - `npm run lint`: web-ext manifest/API validation, with warnings treated as errors.
 - `npm run test:firefox`: package and temporarily install into an isolated Firefox profile, approve the actual host-access prompt, and verify existing/new documents, palette/hex colors, native context-menu navigation in individual, bulk, and current-tab modes, section-first titles, original/site-updated native favicons, preferences reload persistence, actual JSON download/import/review/save, native tab colors, multi-window themes, restoration, configuration removal, and host-permission cleanup. This uses test-only browser-chrome automation access; the extension itself uses standard WebExtension APIs.
 - `npm run package:firefox-store`: lint the Firefox source and build the local store-submission ZIP in `web-ext-artifacts/mozilla-store/`. It is unsigned and is not uploaded or submitted to AMO.
-- The manually dispatched [AMO release workflow](.github/workflows/amo-release.yml) always builds an unsigned ZIP. Its submission step is off by default; enabling it submits the listed add-on to AMO using the `AMO_API_KEY` and `AMO_API_SECRET` repository secrets. Only trigger that step after reviewing the local build. AMO may require human review before the listing is published.
+- Submit the generated ZIP manually through the AMO developer dashboard after reviewing and testing it. `.github/amo-metadata.json` contains the initial listing summary, Tabs category, and All Rights Reserved license value for reference; AMO may still require review before publication.
 
 The GitHub repository is public, but no open-source reuse license is granted. The initial AMO metadata therefore uses Mozilla's `all-rights-reserved` option. Choose a different license before the first store submission if you intend to permit reuse.
 - `npm run lint:chromium`: build the separate MV3 source tree and validate required worker, icon, polyfill, and manifest files.
