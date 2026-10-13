@@ -17,7 +17,7 @@
     "scripts": ["core.js", "preferences.js", "theme.js", "navigation.js", "background.js"],
     "persistent": true
   },
-  "browser_action": { "default_title": "Clusterfudge preferences", "default_icon": "icons/layers.svg" },
-  "icons": { "48": "icons/layers.svg", "96": "icons/layers.svg" },
+  "browser_action": { "default_title": "Clusterfudge preferences", "default_icon": { "32": "icons/little-32.png" } },
+  "icons": { "48": "icons/little-48.png", "96": "icons/little-96.png", "128": "icons/little-128.png" },
   "options_ui": { "page": "options.html", "open_in_tab": true }
 }

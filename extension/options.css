@@ -17,6 +17,7 @@ main { width: min(1040px, 100%); margin: 0 auto; padding: 32px; }
 header, .brand, .section-heading, footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 header { padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .brand { justify-content: flex-start; }
+.brand img { flex: 0 0 auto; object-fit: contain; }
 h1 { font-family: Georgia, "Liberation Serif", serif; font-size: 30px; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
 h2 { margin: 0; font-size: 18px; }
 .local-label { color: var(--muted); font-size: 13px; }

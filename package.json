@@ -11,8 +11,8 @@
     "lint": "web-ext lint --source-dir extension --warnings-as-errors",
     "lint:chromium": "npm run package:chromium && node tests/chromium-manifest.cjs",
     "start": "web-ext run --source-dir extension",
-    "package": "web-ext build --source-dir extension --overwrite-dest",
-    "package:firefox-store": "npm run lint && web-ext build --source-dir extension --artifacts-dir web-ext-artifacts/mozilla-store --overwrite-dest",
+    "package": "web-ext build --source-dir extension --ignore-files icons/biglogo.jpg icons/biglogo.png icons/little.jpg --overwrite-dest",
+    "package:firefox-store": "npm run lint && web-ext build --source-dir extension --artifacts-dir web-ext-artifacts/mozilla-store --ignore-files icons/biglogo.jpg icons/biglogo.png icons/little.jpg --overwrite-dest",
     "package:chromium": "node scripts/package-chromium.cjs && web-ext build --source-dir web-ext-artifacts/chromium-source --artifacts-dir web-ext-artifacts/chromium-package --overwrite-dest"
   },
   "overrides": {

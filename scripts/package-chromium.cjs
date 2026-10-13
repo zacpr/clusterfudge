@@ -13,6 +13,9 @@ async function main() {
   for (const name of await fs.readdir(source)) {
     if (!omitted.has(name)) await fs.cp(path.join(source, name), path.join(output, name), { recursive: true });
   }
+  for (const name of ["biglogo.jpg", "biglogo.png", "little.jpg"]) {
+    await fs.rm(path.join(output, "icons", name), { force: true });
+  }
   for (const name of ["manifest.json", "platform.js", "background-chromium.js"]) {
     await fs.copyFile(path.join(chromium, name), path.join(output, name));
   }

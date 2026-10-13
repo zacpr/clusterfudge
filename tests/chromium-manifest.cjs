@@ -13,9 +13,12 @@ assert.ok(manifest.permissions.includes("contextMenus"));
 assert.ok(manifest.optional_host_permissions.includes("http://*/*"));
 assert.ok(manifest.optional_host_permissions.includes("https://*/*"));
 assert.equal(manifest.permissions.includes("theme"), false);
+assert.ok(manifest.action.default_icon["16"].startsWith("icons/little-"));
+assert.ok(manifest.icons["128"].startsWith("icons/little-"));
 for (const file of [manifest.background.service_worker, "platform.js", "browser-polyfill.min.js", "options.html"]) {
   assert.ok(fs.existsSync(path.join(packaged, file)), `${file} must be present in the Chromium build`);
 }
 for (const icon of Object.values(manifest.icons)) assert.ok(fs.existsSync(path.join(packaged, icon)));
+assert.ok(fs.existsSync(path.join(packaged, "icons/little.png")));
 assert.match(fs.readFileSync(path.join(packaged, "options.html"), "utf8"), /browser-polyfill\.min\.js/);
 console.log("Chromium MV3 package structure is valid.");

@@ -54,6 +54,7 @@ async function main() {
     await driver.get(optionsUrl);
     const optionsHandle = await driver.getWindowHandle();
     await wait(async () => (await driver.findElement(By.id("save")).isEnabled()), "Preferences did not load");
+    assert.ok((await driver.findElement(By.css(".brand img")).getAttribute("src")).endsWith("/icons/little.png"));
     const initialTheme = await driver.executeScript("return browser.theme.getCurrent()");
     await driver.executeScript("return browser.theme.update(arguments[0])", {
       colors: { frame: "#ced9d2", tab_selected: "#eeeeee", tab_text: "#121212", toolbar: "#ffffff" }
