@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 const packaged = path.join(root, "web-ext-artifacts", "chromium-source");
@@ -18,6 +19,11 @@ assert.ok(manifest.icons["128"].startsWith("icons/little-"));
 for (const file of [manifest.background.service_worker, "platform.js", "browser-polyfill.min.js", "options.html"]) {
   assert.ok(fs.existsSync(path.join(packaged, file)), `${file} must be present in the Chromium build`);
 }
+vm.runInNewContext(fs.readFileSync(path.join(packaged, manifest.background.service_worker), "utf8"), {
+  importScripts: (...files) => {
+    for (const file of files) assert.ok(fs.existsSync(path.join(packaged, file)), `${file} imported by the worker must be packaged`);
+  }
+});
 for (const icon of Object.values(manifest.icons)) assert.ok(fs.existsSync(path.join(packaged, icon)));
 assert.ok(fs.existsSync(path.join(packaged, "icons/little.png")));
 assert.match(fs.readFileSync(path.join(packaged, "options.html"), "utf8"), /browser-polyfill\.min\.js/);

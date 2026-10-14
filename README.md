@@ -6,6 +6,8 @@ Clusterfudge is a Firefox-first extension for people working across multiple Ela
 
 Cluster matching is the foundation, not the whole product: the first milestone adds clear visual identification and cluster-aware navigation. Firefox remains the primary and verified browser. Separate Chromium Manifest V3 and Edge builds are now available, with runtime verification still blocked in this managed Flatpak environment.
 
+Version **0.1.1** fixes Edge/Chromium page-menu registration and includes the shared background script in the Chromium package. The user confirmed that the updated unpacked build shows the menu in Edge on 2026-10-15. Automated Edge runtime checks remain blocked by the local browser's extension-loading restrictions; this is not a claim of full Chromium compatibility or store publication.
+
 ## Configure Once, Recognize Every Tab
 
 Define your clusters in the extension preferences. Each cluster starts with:
@@ -137,6 +139,10 @@ Tooling audit note: a patched `shell-quote` override removes the critical adviso
 ## Open in Another Cluster
 
 Right-click a matching page or its tab and choose **Open in another cluster**. The submenu lists the generated destination URLs in preference order, excluding the source cluster. Selecting a destination opens a new tab in the same window; **Open all alternatives in new tabs** opens every listed destination, and the **Open in current tab** branch replaces the right-clicked tab instead. Unmatched pages and pages without usable alternatives have no Clusterfudge submenu.
+
+That dynamic menu behavior is Firefox-only. In Edge and Chrome, right-click **inside the page**, not the tab strip. Their APIs do not support extension tab-strip menus or Firefox's menu-open refresh event. The page menu is limited to configured host patterns and lists configured cluster names, including the source; selecting the source or an unusable destination does nothing. Destinations are validated when clicked, and **Open all alternatives in new tabs** still opens only usable alternatives.
+
+To load an updated Edge test build, run `npm run package:chromium`, open `edge://extensions`, enable **Developer mode**, and use **Load unpacked** to select [web-ext-artifacts/chromium-source/](web-ext-artifacts/chromium-source/). If already loaded from that folder, click **Reload** on Clusterfudge and refresh the cluster page. No store upload is needed.
 
 For example, while viewing:
 

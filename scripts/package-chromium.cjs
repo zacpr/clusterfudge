@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const source = path.join(root, "extension");
 const chromium = path.join(root, "chromium");
 const output = path.join(root, "web-ext-artifacts", "chromium-source");
-const omitted = new Set(["manifest.json", "background.js", "theme.js"]);
+const omitted = new Set(["manifest.json", "theme.js"]);
 
 async function main() {
   await fs.rm(output, { recursive: true, force: true });

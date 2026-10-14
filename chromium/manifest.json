@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clusterfudge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Recognize Elastic Stack clusters by tab color cues and title prefixes.",
   "minimum_chrome_version": "109",
   "permissions": ["storage", "scripting", "contextMenus"],

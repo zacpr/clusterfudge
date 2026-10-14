@@ -107,10 +107,10 @@ if (platform.theme) browser.theme.onUpdated.addListener(event => {
 });
 (browser.browserAction || browser.action).onClicked.addListener(() => browser.runtime.openOptionsPage());
 const menus = browser.menus || browser.contextMenus;
-menus.onShown.addListener((info, tab) => {
+if (menus.onShown) menus.onShown.addListener((info, tab) => {
   clusterMenu.show(info, tab).catch(error => console.warn("Clusterfudge menu:", error.message));
 });
 menus.onClicked.addListener((info, tab) => {
-  clusterMenu.open(info, tab).catch(error => console.warn("Clusterfudge navigation:", error.message));
+  enqueue(() => clusterMenu.open(info, tab)).catch(error => console.warn("Clusterfudge navigation:", error.message));
 });
 enqueue(syncAll);

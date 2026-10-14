@@ -1,12 +1,12 @@
 (function (root) {
   "use strict";
   const core = typeof module !== "undefined" && module.exports ? require("./core.js") : root.ClusterfudgeCore;
-  const contexts = ["page", "tab"];
 
   class ClusterMenu {
     constructor(api) {
       this.api = api;
       this.menus = api.menus || api.contextMenus;
+      this.dynamic = Boolean(this.menus.onShown && this.menus.refresh);
       this.config = { clusters: [], activeTabColoring: false };
       this.items = new Map();
       this.displayed = new Map();
@@ -17,10 +17,15 @@
       this.items.clear();
       this.displayed.clear();
       await this.menus.removeAll();
-      this.menus.create({ id: "clusterfudge-open", title: "Open in another cluster", contexts });
+      if (!this.dynamic && !config.clusters.length) return;
+      const contexts = this.dynamic ? ["page", "tab"] : ["page"];
+      const scope = this.dynamic ? {} : {
+        documentUrlPatterns: [...new Set(config.clusters.map(cluster => core.parsePattern(cluster.pattern).matchPattern))]
+      };
+      this.menus.create({ id: "clusterfudge-open", title: "Open in another cluster", contexts, ...scope });
       for (const cluster of config.clusters) {
         const id = `clusterfudge-new:${cluster.id}`;
-        this.menus.create({ id, parentId: "clusterfudge-open", title: cluster.name, visible: false, contexts });
+        this.menus.create({ id, parentId: "clusterfudge-open", title: cluster.name, visible: !this.dynamic, contexts });
         this.items.set(id, { target: cluster.id, mode: "new" });
       }
       this.menus.create({ id: "clusterfudge-separator", parentId: "clusterfudge-open", type: "separator", contexts });
@@ -28,7 +33,7 @@
       this.menus.create({ id: "clusterfudge-current", parentId: "clusterfudge-open", title: "Open in current tab", contexts });
       for (const cluster of config.clusters) {
         const id = `clusterfudge-current:${cluster.id}`;
-        this.menus.create({ id, parentId: "clusterfudge-current", title: cluster.name, visible: false, contexts });
+        this.menus.create({ id, parentId: "clusterfudge-current", title: cluster.name, visible: !this.dynamic, contexts });
         this.items.set(id, { target: cluster.id, mode: "current" });
       }
     }
@@ -59,7 +64,18 @@
     }
 
     async open(info, tab) {
-      const selected = this.displayed.get(info.menuItemId);
+      let selected = this.displayed.get(info.menuItemId);
+      if (!this.dynamic && tab) {
+        const address = info.pageUrl || tab.url || "";
+        const alternatives = core.alternativeURLs(this.config, address);
+        const item = this.items.get(info.menuItemId);
+        const destination = item && alternatives.find(entry => entry.id === item.target);
+        if (info.menuItemId === "clusterfudge-open-all") {
+          selected = { mode: "all", alternatives, address, tabId: tab.id };
+        } else if (destination) {
+          selected = { ...item, url: destination.url, address, tabId: tab.id };
+        }
+      }
       if (!selected || !tab || selected.tabId !== tab.id) return;
       const current = await this.api.tabs.get(tab.id);
       if (current.url !== selected.address) return;
